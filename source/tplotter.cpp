@@ -8,8 +8,19 @@
 
 #include "Structures.h"
 
-int main(){
-	TFile *f = new TFile("~/data/ldf/intensity_test02.root", "READ");
+int main(int argc, char *argv[]){
+	if(argc < 4){
+		std::cout << " ERROR: Expected 3 arguments but received only " << argc-1 << ".\n";
+		std::cout << "  Syntax: " << argv[0] << " <file> <chan1> <chan2>\n";
+		return 1;
+	}
+
+	unsigned short channel1 = strtoul(argv[2], NULL, 0);
+	unsigned short channel2 = strtoul(argv[3], NULL, 0);
+
+	std::cout << " Using chan1=" << channel1 << ", chan2=" << channel2 << std::endl;
+
+	TFile *f = new TFile(argv[1], "READ");
 	if(!f || !f->IsOpen()) return 1;
 	
 	TTree *t = (TTree*)f->Get("data");
@@ -23,9 +34,6 @@ int main(){
 	
 	TH2I *h = new TH2I("h", "dE vs. E", 4096, 0, 4095, 4096, 0, 4095);
 
-	const unsigned short channel1 = 17;
-	const unsigned short channel2 = 18;
-	
 	unsigned short p1, p2;
 	for(unsigned int i = 0; i < 1; i++){
 		t->GetEntry(i);
