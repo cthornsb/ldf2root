@@ -22,25 +22,27 @@ int main(){
 	if(!str_b) return 1;
 	
 	TH2I *h = new TH2I("h", "dE vs. E", 4096, 0, 4095, 4096, 0, 4095);
+
+	const unsigned short channel1 = 17;
+	const unsigned short channel2 = 18;
 	
 	unsigned short p1, p2;
 	for(unsigned int i = 0; i < 1; i++){
 		t->GetEntry(i);
-		std::cout << "HERE!\n";
 		
 		p1 = 0;
 		p2 = 0;
-		/*while(str->GetNext()){
-			if(str->chan_v == 17) p1 = str->adc_v;
-			else if(str->chan_v == 18) p2 = str->adc_v;
+		for(size_t j = 0; j < str->chan.size(); j++){
+			if(str->chan[j] == channel1) p1 = str->adc[j];
+			else if(str->chan[j] == channel2) p2 = str->adc[j];
 		}
 		
 		if(p1 != 0 && p2 != 0){
 			h->Fill(p1, p2);
-		}*/
+		}
 	}
 
-	/*TCanvas *can = new TCanvas("can", "Canvas");
+	TCanvas *can = new TCanvas("can", "Canvas");
 	can->cd();
 	h->Draw("COLZ");
 	can->WaitPrimitive();
@@ -49,7 +51,7 @@ int main(){
 	f->Close();
 	delete can;
 	delete f;
-	delete h;*/
+	delete h;
 
 	return 0;
 }
