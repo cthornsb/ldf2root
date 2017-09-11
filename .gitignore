@@ -1,6 +1,3 @@
 *.a
 *.o
 *.so
-Structures.cpp
-Structures.h
-LinkDef.h
