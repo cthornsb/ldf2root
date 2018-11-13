@@ -5,6 +5,7 @@
 #include "TTree.h"
 #include "TBranch.h"
 #include "TCanvas.h"
+#include "TApplication.h"
 
 #include "Structures.h"
 
@@ -14,6 +15,8 @@ int main(int argc, char *argv[]){
 		std::cout << "  Syntax: " << argv[0] << " <file> <chan1> <chan2>\n";
 		return 1;
 	}
+
+	TApplication rootapp("rootapp", 0, NULL);
 
 	unsigned short channel1 = strtoul(argv[2], NULL, 0);
 	unsigned short channel2 = strtoul(argv[3], NULL, 0);
@@ -26,17 +29,18 @@ int main(int argc, char *argv[]){
 	TTree *t = (TTree*)f->Get("data");
 	if(!t) return 1;
 	
-	CaenV775EventStructure *str;
+	CaenV775EventStructure *str = NULL;
 	TBranch *str_b = NULL;
 	
 	t->SetBranchAddress("caen", &str, &str_b);
 	if(!str_b) return 1;
 	
-	TH2I *h = new TH2I("h", "dE vs. E", 4096, 0, 4095, 4096, 0, 4095);
+	TH2I *h1 = new TH2I("h", "dE vs. E", 4096, 0, 4095, 4096, 0, 4095);
 
 	unsigned short p1, p2;
-	for(unsigned int i = 0; i < 1; i++){
+	for(unsigned int i = 0; i < t->GetEntries(); i++){
 		t->GetEntry(i);
+		if(!str) continue;
 		
 		p1 = 0;
 		p2 = 0;
@@ -46,20 +50,19 @@ int main(int argc, char *argv[]){
 		}
 		
 		if(p1 != 0 && p2 != 0){
-			h->Fill(p1, p2);
+			h1->Fill(p1, p2);
 		}
 	}
 
 	TCanvas *can = new TCanvas("can", "Canvas");
 	can->cd();
-	h->Draw("COLZ");
+	h1->Draw("COLZ");
 	can->WaitPrimitive();
 
 	can->Close();
 	f->Close();
 	delete can;
 	delete f;
-	delete h;
 
 	return 0;
 }
